@@ -54,7 +54,7 @@ class _PetrolStationListState extends State<PetrolStationList> {
                 String colorCode = row[5].toString().trim().toLowerCase();
 
                 // FIXED: Added the '$' before the curly braces and '/search/' path
-                String mapplsUrl = "https://mappls.com{Uri.encodeComponent(name)}?traffic=true";
+               String mapplsUrl = "https://mappls.com{Uri.encodeComponent(name)}?traffic=true";
 
                 return Card(
                   margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
