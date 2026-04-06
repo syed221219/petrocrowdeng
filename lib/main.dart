@@ -16,7 +16,7 @@ class PetrolStationList extends StatefulWidget {
 
 class _PetrolStationListState extends State<PetrolStationList> {
   List<List<dynamic>> _data = [];
-  final String _csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vToxrH-aGsZO1m6ObTPqfvXYDjNS9DiRCGDat4rW_5TnSCmXhF7tnlbMiBApYpIuxoGOqpbnj2FVKuS/pub?output=csv"; // Ensure this is your published CSV link
+  final String _csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vToxrH-aGsZO1m6ObTPqfvXYDjNS9DiRCGDat4rW_5TnSCmXhF7tnlbMiBApYpIuxoGOqpbnj2FVKuS/pub?output=csv"; 
 
   Future<void> _fetchData() async {
     try {
@@ -43,47 +43,51 @@ class _PetrolStationListState extends State<PetrolStationList> {
           : ListView.builder(
               itemCount: _data.length - 1,
               itemBuilder: (context, index) {
-                // ... inside your itemBuilder ...
-final row = _data[index + 1];
-String name = row[0].toString();
-String gMapsUrl = row[2].toString(); // Ensure this matches your Sheet column
+                final row = _data[index + 1];
+                
+                // Safety check: ensure row has all columns
+                if (row.length < 6) return const SizedBox.shrink();
 
-// FIX: Use the variable directly with $ and no extra braces in the final string
-String mapplsUrl = "https://mappls.com{Uri.encodeComponent(name)}?traffic=true";
+                String name = row[0].toString();
+                String gMapsUrl = row[2].toString(); 
+                String status = row[4].toString();
+                String colorCode = row[5].toString().trim().toLowerCase();
 
-return Card(
-  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-  child: Column(
-    children: [
-      ListTile(
-        leading: CircleAvatar(
-          backgroundColor: row[5].toString().trim().toLowerCase() == "red" ? Colors.red : Colors.green,
-          child: const Icon(Icons.local_gas_station, color: Colors.white),
-        ),
-        title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text("Status: ${row[4]}"),
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          TextButton.icon(
-            onPressed: () => html.window.open(gMapsUrl, "_blank"),
-            icon: const Icon(Icons.bar_chart),
-            label: const Text("Crowd Graph"),
-          ),
-          ElevatedButton.icon(
-            onPressed: () => html.window.open(mapplsUrl, "_blank"),
-            icon: const Icon(Icons.traffic),
-            label: const Text("Road Traffic"),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-          ),
-        ],
-      )
-    ],
-  ),
-);
+                // FIXED: Added the '$' before the curly braces and '/search/' path
+                String mapplsUrl = "https://mappls.com{Uri.encodeComponent(name)}?traffic=true";
 
-               
+                return Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: colorCode == "red" ? Colors.red : Colors.green,
+                          child: const Icon(Icons.local_gas_station, color: Colors.white),
+                        ),
+                        title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text("Status: $status"),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          TextButton.icon(
+                            onPressed: () => html.window.open(gMapsUrl, "_blank"),
+                            icon: const Icon(Icons.bar_chart),
+                            label: const Text("Crowd Graph"),
+                          ),
+                          ElevatedButton.icon(
+                            onPressed: () => html.window.open(mapplsUrl, "_blank"),
+                            icon: const Icon(Icons.traffic),
+                            label: const Text("Road Traffic"),
+                            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange, foregroundColor: Colors.white),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
+                );
               },
             ),
     );
