@@ -1,0 +1,27 @@
+name: Flutter Web Deploy
+on:
+  push:
+    branches: [ "main" ] # Runs every time you push to main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Web
+        # The base-href must match your repository name exactly
+        run: flutter build web --release --base-href "/petrocrowdeng/"
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build/web
+          branch: gh-pages
